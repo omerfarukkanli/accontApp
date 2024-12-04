@@ -1,14 +1,8 @@
-import {
-  Body,
-  Controller,
-  HttpException,
-  HttpStatus,
-  Post,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/auth/dto/createUser.ts';
+import { SuccessResponseDto } from 'src/generic/dto/successResponse.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -16,26 +10,18 @@ export class AuthController {
 
   @Post('signup')
   async signup(@Body() body: CreateUserDto, @Res() res: Response) {
-    try {
-      const response = await this.authService.signUp(body);
-      res.status(HttpStatus.CREATED).send(response);
-    } catch (error) {
-      throw new HttpException(
-        error,
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    const response: SuccessResponseDto = await this.authService.signUp(
+      body.email,
+      body.password,
+    );
+    res.status(HttpStatus.CREATED).send(response);
   }
   @Post('signin')
   async signin(@Body() signup: CreateUserDto, @Res() res: Response) {
-    try {
-      const response = await this.authService.signIn(signup.email);
-      res.status(HttpStatus.OK).send(response);
-    } catch (error) {
-      throw new HttpException(
-        error,
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    const response: SuccessResponseDto = await this.authService.signIn(
+      signup.email,
+      signup.password,
+    );
+    res.status(HttpStatus.OK).send(response);
   }
 }

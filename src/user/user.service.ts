@@ -10,10 +10,6 @@ export class UserService {
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
-      const user = await this.userModel.findOne({ email: createUserDto.email });
-      if (user) {
-        throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
-      }
       const createdUser = new this.userModel(createUserDto);
       return createdUser.save();
     } catch (error) {
