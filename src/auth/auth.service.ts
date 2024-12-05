@@ -40,6 +40,7 @@ export class AuthService {
       throw new HttpException('Kullanıcı bulunamadı.', HttpStatus.NOT_FOUND);
     }
     const payload = {
+      sub: user._id,
       email: user.email,
     };
     const isMatch = await bcrypt.compare(password, user.password);
