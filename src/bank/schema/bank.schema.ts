@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import { DebtType } from 'src/generic/enum/debtType.enum';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { Credit } from 'src/generic/types/credit.type';
+import { User } from 'src/user/user.schema';
 
 export type BankDocument = HydratedDocument<Bank>;
 
@@ -14,21 +15,6 @@ export class Bank {
 
   @Prop({
     required: true,
-    enum: DebtType,
-    type: String,
-    default: DebtType.CREDIT_CARD,
-  })
-  debtType: DebtType;
-
-  @Prop({
-    required: true,
-    type: Number,
-    default: 0,
-  })
-  totalDebt: number;
-
-  @Prop({
-    required: true,
     type: Number,
     default: 0,
   })
@@ -36,10 +22,12 @@ export class Bank {
 
   @Prop({
     required: true,
-    type: Number,
-    default: 0,
+    type: Object,
   })
-  monthlyPayment: number;
+  credits: Credit;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  userId: User;
 }
 
 export const BankSchema = SchemaFactory.createForClass(Bank);

@@ -1,15 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DebtType } from 'src/generic/enum/debtType.enum';
+import { Credit } from 'src/generic/types/credit.type';
 
-export class CreateBankDto {
-  @ApiProperty({ default: 'name' })
+interface ICreateBank {
   name: string;
-  @ApiProperty({ default: 10 })
   totalDebt: number;
-  @ApiProperty({ default: 10 })
   balance: number;
-  @ApiProperty({ default: 10 })
-  monthlyPayment: number;
-  @ApiProperty({ default: DebtType.CREDIT_CARD })
-  deptType: DebtType;
+  credits: Credit[];
+}
+
+export class CreateBankDto implements ICreateBank {
+  @ApiProperty({ default: 'Bank of America' })
+  name: string;
+  @ApiProperty({ default: 10000 })
+  totalDebt: number;
+  @ApiProperty({ default: 10000 })
+  balance: number;
+  @ApiProperty({
+    type: [Object],
+    example: [
+      {
+        installmentAmount: 100,
+        totalInstallments: 10,
+        monthlyPayment: 1000,
+        interestRate: 0.1,
+        startDate: '2021-01-01',
+      },
+    ],
+  })
+  credits: Credit[];
 }
