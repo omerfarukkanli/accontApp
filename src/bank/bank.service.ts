@@ -9,9 +9,12 @@ import { SuccessResponseDto } from 'src/generic/dto/successResponse.dto';
 export class BankService {
   constructor(@InjectModel(Bank.name) private bankModel: Model<Bank>) {}
 
-  async create(createBankDto: CreateBankDto): Promise<SuccessResponseDto> {
+  async create(
+    createBankDto: CreateBankDto,
+    userId: string,
+  ): Promise<SuccessResponseDto> {
     try {
-      const bank = new this.bankModel(createBankDto);
+      const bank = new this.bankModel({ ...createBankDto, userId });
       const createdBank = await bank.save();
 
       return new SuccessResponseDto(
@@ -28,9 +31,9 @@ export class BankService {
     }
   }
 
-  async findAll(): Promise<SuccessResponseDto> {
+  async findAll(userId: string): Promise<SuccessResponseDto> {
     try {
-      const banks = await this.bankModel.find();
+      const banks = await this.bankModel.find({ userId });
       return new SuccessResponseDto(true, HttpStatus.OK, '', {
         bank: banks,
       });
@@ -42,9 +45,9 @@ export class BankService {
     }
   }
 
-  async findOne(id: string): Promise<SuccessResponseDto> {
+  async findOne(id: string, userId: string): Promise<SuccessResponseDto> {
     try {
-      const bank = await this.bankModel.findById(id);
+      const bank = await this.bankModel.findById({ _id: id, userId });
       return new SuccessResponseDto(true, HttpStatus.OK, '', {
         bank,
       });
@@ -59,11 +62,13 @@ export class BankService {
   async update(
     id: string,
     updateBankDto: CreateBankDto,
+    userId: string,
   ): Promise<SuccessResponseDto> {
     try {
       const updatedBank = await this.bankModel.findByIdAndUpdate(
         id,
-        updateBankDto,
+        { ...updateBankDto, userId },
+        { new: true },
       );
       return new SuccessResponseDto(true, HttpStatus.OK, '', {
         bank: updatedBank,
@@ -75,9 +80,9 @@ export class BankService {
       );
     }
   }
-  async delete(id: string): Promise<SuccessResponseDto> {
+  async delete(id: string, userId: string): Promise<SuccessResponseDto> {
     try {
-      await this.bankModel.findByIdAndDelete(id);
+      await this.bankModel.findByIdAndDelete({ _id: id, userId });
       return new SuccessResponseDto(true, HttpStatus.OK, 'Banka silindi');
     } catch (error) {
       throw new HttpException(

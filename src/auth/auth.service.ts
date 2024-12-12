@@ -27,11 +27,21 @@ export class AuthService {
       email,
       password: hash,
     });
+
+    const payload = {
+      sub: createdUser._id,
+      email: createdUser.email,
+    };
+
     return new SuccessResponseDto(
       true,
       HttpStatus.OK,
       'Kullanıcı başarıyla oluşturuldu.',
-      createdUser,
+      {
+        access_token: this.jwtService.sign(payload, {
+          secret: 'secret',
+        }),
+      },
     );
   }
   async signIn(email: string, password: string): Promise<SuccessResponseDto> {
@@ -48,12 +58,15 @@ export class AuthService {
     if (!isMatch) {
       throw new HttpException('Yetkisiz giriş.', HttpStatus.UNAUTHORIZED);
     }
+
     return new SuccessResponseDto(
       true,
       HttpStatus.OK,
-      'Kullanıcı başarıyla giriş yaptı.',
+      'Başarıyla giriş yapıldı',
       {
-        access_token: await this.jwtService.signAsync(payload),
+        access_token: this.jwtService.sign(payload, {
+          secret: 'secret',
+        }),
       },
     );
   }

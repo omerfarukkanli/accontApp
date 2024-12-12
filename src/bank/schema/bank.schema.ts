@@ -22,6 +22,13 @@ export class Bank {
 
   @Prop({
     required: true,
+    type: Number,
+    default: 0,
+  })
+  totalDebt: number;
+
+  @Prop({
+    required: true,
     type: Object,
   })
   credits: Credit;
